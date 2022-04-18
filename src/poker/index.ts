@@ -1,4 +1,4 @@
-import { GameState, PlayerInstance, PokerGame } from "./index.d";
+import { GameState, PokerGame } from "./index.d";
 
 export const createPokerGame = (): PokerGame => {
   let gameState: GameState = {};
