@@ -1,12 +1,17 @@
 export interface PokerGame {
-  addPlayer: PlayerInstance;
-  startRound: RoomInstance;
+  addPlayer: (name: string) => PlayerInstance;
+  startRound: () => RoomInstance;
 }
 
 export interface PlayerInstance {
-  draw: void;
+  draw: (card: string) => void;
+  gameState: GameState;
 }
 
 export interface RoomInstance {
-  getCards: void;
+  getCards: () => void | undefined;
+}
+
+export interface GameState {
+  [key: string]: string | null;
 }

@@ -1,12 +1,22 @@
-export const createPokerGame = () => {
+import { GameState, PlayerInstance, PokerGame } from "./index.d";
+
+export const createPokerGame = (): PokerGame => {
+  let gameState: GameState = {};
   const addPlayer = (name: string) => {
-    const draw = (value: string) => {};
-    return { draw };
+    gameState = { ...gameState, [name]: null };
+
+    return {
+      draw(card: string): void {
+        gameState[name] = card;
+      },
+      gameState,
+    };
   };
 
   const startRound = () => {
-    const getCards = () => {};
-    return { getCards };
+    return {
+      getCards() {},
+    };
   };
 
   return { addPlayer, startRound };
