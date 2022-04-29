@@ -5,13 +5,12 @@ export interface PokerGame {
 
 export interface PlayerInstance {
   draw: (card: string) => void;
-  gameState: GameState;
 }
 
 export interface RoomInstance {
-  getCards: () => void | undefined;
+  getCards: () => string;
 }
 
-export interface GameState {
+export interface PlayerList {
   [key: string]: string | null;
 }

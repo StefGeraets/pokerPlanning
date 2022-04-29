@@ -1,22 +1,54 @@
-import { GameState, PokerGame } from "./index.d";
+import { PlayerList, PokerGame } from "./index.d";
 
 export const createPokerGame = (): PokerGame => {
-  let gameState: GameState = {};
-  const addPlayer = (name: string) => {
-    gameState = { ...gameState, [name]: null };
+  let players: PlayerList = {};
+  let currentRound: PlayerList = {};
 
-    return {
-      draw(card: string): void {
-        gameState[name] = card;
-      },
-      gameState,
+  const addPlayer = (name: string) => {
+    players = { ...players, [name]: null };
+
+    const draw = (card: string) => {
+      if (Object.keys(currentRound).length === 0) {
+        throw new Error("No round started");
+      }
+
+      if (!(name in currentRound)) {
+        throw new Error("Player is not in current round");
+      }
+
+      currentRound[name] = card;
     };
+
+    return { draw };
   };
 
   const startRound = () => {
-    return {
-      getCards() {},
+    if (Object.keys(players).length === 0) {
+      throw new Error("No players in current game");
+    }
+
+    currentRound = {};
+    currentRound = { ...players };
+
+    const getCards = () => {
+      let done: Boolean = true;
+
+      for (let player in currentRound) {
+        if (currentRound[player] === null) {
+          done = false;
+        }
+      }
+
+      if (done) {
+        return `${Object.entries(currentRound)
+          .map((p) => p.join(": "))
+          .join(", ")}`;
+      } else {
+        return "Drawing cards is not done";
+      }
     };
+
+    return { getCards };
   };
 
   return { addPlayer, startRound };
