@@ -1,11 +1,11 @@
 import { PlayerList, PokerGame } from "./index.d";
 
 export const createPokerGame = (): PokerGame => {
-  let players: PlayerList = {};
+  let players: string[] = [];
   let currentRound: PlayerList = {};
 
   const addPlayer = (name: string) => {
-    players = { ...players, [name]: null };
+    players = [...players, name];
 
     const draw = (card: string) => {
       if (Object.keys(currentRound).length === 0) {
@@ -23,15 +23,18 @@ export const createPokerGame = (): PokerGame => {
   };
 
   const startRound = () => {
-    if (Object.keys(players).length === 0) {
+    if (players.length === 0) {
       throw new Error("No players in current game");
     }
 
     currentRound = {};
-    currentRound = { ...players };
+    currentRound = players.reduce(
+      (obj, name) => ({ ...obj, [name]: null }),
+      {}
+    );
 
     const getCards = () => {
-      let done: Boolean = true;
+      let done: boolean = true;
 
       for (let player in currentRound) {
         if (currentRound[player] === null) {
@@ -54,15 +57,6 @@ export const createPokerGame = (): PokerGame => {
   return { addPlayer, startRound };
 };
 
-const game = createPokerGame();
-const henk = game.addPlayer("Henk");
-const piet = game.addPlayer("Piet");
-
-const round = game.startRound();
-round.getCards(); // "Drawing cards was not finished"
-
-henk.draw("8");
-round.getCards(); // "Drawing cards was not finished"
-
-piet.draw("5");
-round.getCards(); // "Piet: 5, Henk: 8"
+// run from command line.
+// [ ] split functionality from execution
+// [x] refactor any optimasations I can pick up.
