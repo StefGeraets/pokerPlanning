@@ -34,13 +34,9 @@ export const createPokerGame = (): PokerGame => {
     );
 
     const getCards = () => {
-      let done: boolean = true;
+      let done: boolean = false;
 
-      for (let player in currentRound) {
-        if (currentRound[player] === null) {
-          done = false;
-        }
-      }
+      done = Object.keys(currentRound).every((key) => currentRound[key] !== null);
 
       if (done) {
         return `${Object.entries(currentRound)
@@ -56,7 +52,3 @@ export const createPokerGame = (): PokerGame => {
 
   return { addPlayer, startRound };
 };
-
-// run from command line.
-// [ ] split functionality from execution
-// [x] refactor any optimasations I can pick up.
