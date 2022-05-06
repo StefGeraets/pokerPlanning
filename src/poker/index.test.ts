@@ -49,12 +49,13 @@ describe("createPokerGame", () => {
       }).toThrowError("No players in current game");
     });
 
-    it("should start a new round with current players in game", () => {
+    it("should start a new round with current players in game", async () => {
       const henk = game.addPlayer("henk");
       const round = game.startRound();
       henk.draw("3");
 
-      expect(round.getCards()).toEqual("henk: 3");
+      const resultRound1 = await round.getCards();
+      expect(resultRound1).toEqual("henk: 3");
 
       const piet = game.addPlayer("piet");
       const round2 = game.startRound();
@@ -62,22 +63,25 @@ describe("createPokerGame", () => {
       henk.draw("3");
       piet.draw("5");
 
-      expect(round2.getCards()).toEqual("henk: 3, piet: 5");
+      const resultRound2 = await round.getCards();
+      expect(resultRound2).toEqual("henk: 3, piet: 5");
     });
   });
 
   describe("getCards", () => {
-    it("should return a message when not all players have drawn a card", () => {
+    it("should return a message when not all players have drawn a card", async () => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
       const round = game.startRound();
 
       henk.draw("5");
 
-      expect(round.getCards()).toEqual("Drawing cards is not done");
+      await expect(round.getCards(2000)).rejects.toEqual(
+        "Drawing cards was not finished"
+      );
     });
 
-    it("should return all players and their drawn cards", () => {
+    it("should return all players and their drawn cards", async () => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
       const round = game.startRound();
@@ -85,7 +89,8 @@ describe("createPokerGame", () => {
       henk.draw("3");
       piet.draw("5");
 
-      expect(round.getCards()).toEqual("henk: 3, piet: 5");
+      const result = await round.getCards();
+      expect(result).toEqual("henk: 3, piet: 5");
     });
   });
 });

@@ -33,18 +33,31 @@ export const createPokerGame = (): PokerGame => {
       {}
     );
 
-    const getCards = () => {
-      let done: boolean = false;
+    const isDrawingComplete = (): boolean => {
+      return Object.keys(currentRound).every(
+        (key) => currentRound[key] !== null
+      );
+    };
 
-      done = Object.keys(currentRound).every((key) => currentRound[key] !== null);
+    const getCards = (timeout?: number) => {
+      return new Promise<string>((resolve, reject) => {
+        const waitUntillAllCardsDrawn = () => {
+          if (timeout)
+            setTimeout(() => {
+              return reject("Drawing cards was not finished");
+            }, timeout);
 
-      if (done) {
-        return `${Object.entries(currentRound)
-          .map((p) => p.join(": "))
-          .join(", ")}`;
-      } else {
-        return "Drawing cards is not done";
-      }
+          if (isDrawingComplete())
+            return resolve(
+              `${Object.entries(currentRound)
+                .map((p) => p.join(": "))
+                .join(", ")}`
+            );
+          setTimeout(waitUntillAllCardsDrawn, 30);
+        };
+
+        waitUntillAllCardsDrawn();
+      });
     };
 
     return { getCards };

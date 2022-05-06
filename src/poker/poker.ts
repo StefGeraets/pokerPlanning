@@ -5,13 +5,14 @@ const henk = game.addPlayer("Henk");
 const piet = game.addPlayer("Piet");
 
 const round = game.startRound();
-round.getCards(); // Drawing cards was not finished
-console.log(round.getCards()); // For file output
+round
+  .getCards(2000)
+  .then((val) => console.log(val))
+  .catch((err) => console.log(err));
 
 henk.draw("8");
-round.getCards(); // Drawing cards was not finished
-console.log(round.getCards()); // For file output
-
 piet.draw("5");
-round.getCards(); // Piet: 5, Henk: 8
-console.log(round.getCards()); // For file output
+
+// [x] Maak van getCards() een promise, die resolved als alle kaarten bekend zijn
+// [ ] definieer op create poker game met typescript generics de type van de kaart (number, of “1” | “3" | “:coffee:️“) en zorg dat dit type dan dus ook op de ‘draw’ functie gebruikt wordt
+// Geef aan createPokerGame() een argument mee welke de draw functie middels generic type typed.
