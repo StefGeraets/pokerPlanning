@@ -63,7 +63,7 @@ describe("createPokerGame", () => {
       henk.draw("3");
       piet.draw("5");
 
-      const resultRound2 = await round.getCards();
+      const resultRound2 = await round2.getCards();
       expect(resultRound2).toEqual("henk: 3, piet: 5");
     });
   });
