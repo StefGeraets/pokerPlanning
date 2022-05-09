@@ -1,6 +1,6 @@
 import { createPokerGame } from ".";
 
-const game = createPokerGame();
+const game = createPokerGame("fib");
 const henk = game.addPlayer("Henk");
 const piet = game.addPlayer("Piet");
 

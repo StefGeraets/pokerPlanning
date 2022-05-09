@@ -1,6 +1,31 @@
-import { PlayerList, PokerGame } from "./index.d";
+import {
+  CreatePokerGame,
+  PlayerList,
+  PokerGame,
+  VotingSystem,
+} from "./index.d";
 
-export const createPokerGame = (): PokerGame => {
+export const votingSystem: VotingSystem = {
+  fib: ["0", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "☕️", "?"],
+  modFib: [
+    "0",
+    "1/2",
+    "1",
+    "2",
+    "3",
+    "5",
+    "8",
+    "13",
+    "20",
+    "40",
+    "100",
+    "☕️",
+    "?",
+  ],
+  shirt: ["xxs", "xs", "s", "m", "l", "xl", "xxl", "☕️", "?"],
+};
+
+export const createPokerGame: CreatePokerGame = (system: string): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
 
