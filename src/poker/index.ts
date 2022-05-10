@@ -1,8 +1,25 @@
 import { PlayerList, PokerGame } from "./index.d";
+// let events = require("events");
 
 export const createPokerGame = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
+
+  let outsideResolve: (val: any) => void, outsideReject: (val: any) => void;
+
+  const checkDone = (): void => {
+    if (isDrawingComplete()) {
+      outsideResolve(
+        `${Object.entries(currentRound)
+          .map((p) => p.join(": "))
+          .join(", ")}`
+      );
+    }
+  };
+
+  const isDrawingComplete = (): boolean => {
+    return Object.keys(currentRound).every((key) => currentRound[key] !== null);
+  };
 
   const addPlayer = (name: string) => {
     players = [...players, name];
@@ -17,6 +34,7 @@ export const createPokerGame = (): PokerGame => {
       }
 
       currentRound[name] = card;
+      checkDone();
     };
 
     return { draw };
@@ -33,30 +51,10 @@ export const createPokerGame = (): PokerGame => {
       {}
     );
 
-    const isDrawingComplete = (): boolean => {
-      return Object.keys(currentRound).every(
-        (key) => currentRound[key] !== null
-      );
-    };
-
-    const getCards = (timeout?: number) => {
+    const getCards = (): Promise<string> => {
       return new Promise<string>((resolve, reject) => {
-        const waitUntillAllCardsDrawn = () => {
-          if (timeout)
-            setTimeout(() => {
-              return reject("Drawing cards was not finished");
-            }, timeout);
-
-          if (isDrawingComplete())
-            return resolve(
-              `${Object.entries(currentRound)
-                .map((p) => p.join(": "))
-                .join(", ")}`
-            );
-          setTimeout(waitUntillAllCardsDrawn, 30);
-        };
-
-        waitUntillAllCardsDrawn();
+        outsideResolve = resolve;
+        outsideReject = reject;
       });
     };
 
