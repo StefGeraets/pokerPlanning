@@ -6,7 +6,7 @@ const piet = game.addPlayer("Piet");
 
 const round = game.startRound();
 round
-  .getCards(2000)
+  .getCards()
   .then((val) => console.log(val))
   .catch((err) => console.log(err));
 
