@@ -5,7 +5,8 @@ export const createPokerGame = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
 
-  let outsideResolve: (val: any) => void, outsideReject: (val: any) => void;
+  let outsideResolve: (val: string) => void = () => {};
+  let outsideReject: (val: string) => void = () => {};
 
   const checkDone = (): void => {
     if (isDrawingComplete()) {
@@ -53,8 +54,16 @@ export const createPokerGame = (): PokerGame => {
 
     const getCards = (): Promise<string> => {
       return new Promise<string>((resolve, reject) => {
-        outsideResolve = resolve;
-        outsideReject = reject;
+        if (isDrawingComplete()) {
+          resolve(
+            `${Object.entries(currentRound)
+              .map((p) => p.join(": "))
+              .join(", ")}`
+          );
+        } else {
+          outsideResolve = resolve;
+          outsideReject = reject;
+        }
       });
     };
 

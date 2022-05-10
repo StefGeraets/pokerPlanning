@@ -69,18 +69,6 @@ describe("createPokerGame", () => {
   });
 
   describe("getCards", () => {
-    it("should return a message when not all players have drawn a card", async () => {
-      const henk = game.addPlayer("henk");
-      const piet = game.addPlayer("piet");
-      const round = game.startRound();
-
-      henk.draw("5");
-
-      await expect(round.getCards(2000)).rejects.toEqual(
-        "Drawing cards was not finished"
-      );
-    });
-
     it("should return all players and their drawn cards", async () => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
