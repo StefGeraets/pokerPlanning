@@ -78,17 +78,17 @@ export const createPokerGame: CreatePokerGame<Deck> = (): PokerGame => {
     );
 
     const getCards = (): Promise<string> => {
+      if (isDrawingComplete()) {
+        return Promise.resolve(
+          `${Object.entries(currentRound)
+            .map((p) => p.join(": "))
+            .join(", ")}`
+        );
+      }
+
       return new Promise<string>((resolve, reject) => {
-        if (isDrawingComplete()) {
-          resolve(
-            `${Object.entries(currentRound)
-              .map((p) => p.join(": "))
-              .join(", ")}`
-          );
-        } else {
-          outsideResolve = resolve;
-          outsideReject = reject;
-        }
+        outsideResolve = resolve;
+        outsideReject = reject;
       });
     };
 
