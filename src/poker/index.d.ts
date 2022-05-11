@@ -8,7 +8,7 @@ export interface PlayerInstance {
 }
 
 export interface RoomInstance {
-  getCards: (timeout?: number) => Promise<string>;
+  getCards: () => Promise<string>;
 }
 
 export interface PlayerList {

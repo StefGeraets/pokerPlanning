@@ -69,16 +69,44 @@ describe("createPokerGame", () => {
   });
 
   describe("getCards", () => {
-    it("should return all players and their drawn cards", async () => {
+    it("should return all players and their drawn cards", (done) => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
       const round = game.startRound();
 
       henk.draw("3");
+
+      const result = round.getCards();
+
       piet.draw("5");
 
-      const result = await round.getCards();
-      expect(result).toEqual("henk: 3, piet: 5");
+      result.then((val) => {
+        expect(val).toEqual("henk: 3, piet: 5");
+        done();
+      });
+
+      // refactor to not use [then] and [done]
+    });
+
+    it.skip("should resolve multiple promises", async () => {
+      const henk = game.addPlayer("henk");
+      const piet = game.addPlayer("piet");
+      const round = game.startRound();
+
+      henk.draw("3");
+
+      const result1 = round.getCards();
+      const result2 = round.getCards();
+
+      piet.draw("5");
+
+      await Promise.all([result1, result2]).then((values) => {
+        console.log(values);
+      });
+      // await expect(Promise.all([result1, result2])).resolves.toBe([
+      //   "henk: 3, piet: 5",
+      //   "henk: 3, piet: 5",
+      // ]);
     });
   });
 });
