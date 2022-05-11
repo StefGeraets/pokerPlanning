@@ -18,17 +18,17 @@ export type VotingSystem = {
   shirt: ["xxs", "xs", "s", "m", "l", "xl", "xxl", "☕️", "?"];
 };
 
-export type CreatePokerGame = <K extends keyof VotingSystem>(
-  system: K
-) => PokerGame;
+export type Fib = "0" | "1";
 
-export interface PokerGame {
-  addPlayer: (name: string) => PlayerInstance<T>;
+export type CreatePokerGame<Deck> = () => PokerGame<Deck>;
+
+export interface PokerGame<Deck> {
+  addPlayer: (name: string) => PlayerInstance<Deck>;
   startRound: () => RoomInstance;
 }
 
-export interface PlayerInstance {
-  draw: (card: string) => void;
+export interface PlayerInstance<Deck> {
+  draw: (card: Deck) => void;
 }
 
 export interface RoomInstance {

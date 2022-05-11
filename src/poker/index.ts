@@ -1,5 +1,6 @@
 import {
   CreatePokerGame,
+  Fib,
   PlayerList,
   PokerGame,
   VotingSystem,
@@ -25,7 +26,7 @@ export const votingSystem: VotingSystem = {
   shirt: ["xxs", "xs", "s", "m", "l", "xl", "xxl", "☕️", "?"],
 };
 
-export const createPokerGame: CreatePokerGame = (system: string): PokerGame => {
+export const createPokerGame: CreatePokerGame<Deck> = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
 
