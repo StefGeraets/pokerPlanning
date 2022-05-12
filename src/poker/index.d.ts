@@ -22,8 +22,9 @@ export type Fib = "0" | "1";
 
 export type CreatePokerGame<Deck> = () => PokerGame<Deck>;
 
-export interface PokerGame<Deck> {
-  addPlayer: (name: string) => PlayerInstance<Deck>;
+export type Resolve = (val: string) => void;
+export interface PokerGame {
+  addPlayer: (name: string) => PlayerInstance;
   startRound: () => RoomInstance;
 }
 

@@ -1,10 +1,4 @@
-import {
-  CreatePokerGame,
-  Fib,
-  PlayerList,
-  PokerGame,
-  VotingSystem,
-} from "./index.d";
+import { PlayerList, PokerGame, Resolve } from "./index.d";
 
 export const votingSystem: VotingSystem = {
   fib: ["0", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "☕️", "?"],
@@ -29,17 +23,19 @@ export const votingSystem: VotingSystem = {
 export const createPokerGame: CreatePokerGame<Deck> = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
+  let outsideResolve: Resolve[] = [];
 
-  let outsideResolve: (val: string) => void = () => {};
-  let outsideReject: (val: string) => void = () => {};
+  const printRoundResult = (): string =>
+    `${Object.entries(currentRound)
+      .map((p) => p.join(": "))
+      .join(", ")}`;
 
   const checkDone = (): void => {
     if (isDrawingComplete()) {
-      outsideResolve(
-        `${Object.entries(currentRound)
-          .map((p) => p.join(": "))
-          .join(", ")}`
-      );
+      outsideResolve.forEach((func) => {
+        func(printRoundResult());
+      });
+      outsideResolve = [];
     }
   };
 
@@ -79,16 +75,11 @@ export const createPokerGame: CreatePokerGame<Deck> = (): PokerGame => {
 
     const getCards = (): Promise<string> => {
       if (isDrawingComplete()) {
-        return Promise.resolve(
-          `${Object.entries(currentRound)
-            .map((p) => p.join(": "))
-            .join(", ")}`
-        );
+        return Promise.resolve(printRoundResult());
       }
 
-      return new Promise<string>((resolve, reject) => {
-        outsideResolve = resolve;
-        outsideReject = reject;
+      return new Promise<string>((resolve) => {
+        outsideResolve.push(resolve);
       });
     };
 
