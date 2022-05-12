@@ -69,7 +69,7 @@ describe("createPokerGame", () => {
   });
 
   describe("getCards", () => {
-    it("should return all players and their drawn cards", (done) => {
+    it("should return all players and their drawn cards", async () => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
       const round = game.startRound();
@@ -80,33 +80,29 @@ describe("createPokerGame", () => {
 
       piet.draw("5");
 
-      result.then((val) => {
-        expect(val).toEqual("henk: 3, piet: 5");
-        done();
-      });
-
       // refactor to not use [then] and [done]
+      await expect(result).resolves.toBe("henk: 3, piet: 5");
     });
 
-    it.skip("should resolve multiple promises", async () => {
+    it.only("should resolve multiple promises", async () => {
       const henk = game.addPlayer("henk");
       const piet = game.addPlayer("piet");
       const round = game.startRound();
 
       henk.draw("3");
 
-      const result1 = round.getCards();
-      const result2 = round.getCards();
+      const result1 = round.getCards(); // Promise
+      const result2 = round.getCards(); // Promise
 
-      piet.draw("5");
+      piet.draw("5"); // Should resolves Promises
 
-      await Promise.all([result1, result2]).then((values) => {
-        console.log(values);
-      });
-      // await expect(Promise.all([result1, result2])).resolves.toBe([
-      //   "henk: 3, piet: 5",
-      //   "henk: 3, piet: 5",
-      // ]);
+      console.log("res1", result1); // <pending>
+      console.log("res2", result2); // 'henk: 3, piet: 5'
+
+      await expect(Promise.all([result1, result2])).resolves.toStrictEqual([
+        "henk: 3, piet: 5",
+        "henk: 3, piet: 5",
+      ]);
     });
   });
 });
