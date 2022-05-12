@@ -1,3 +1,5 @@
+export type Resolve = (val: string) => void;
+
 export interface PokerGame {
   addPlayer: (name: string) => PlayerInstance;
   startRound: () => RoomInstance;

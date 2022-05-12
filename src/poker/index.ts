@@ -1,20 +1,21 @@
-import { PlayerList, PokerGame } from "./index.d";
-// let events = require("events");
+import { PlayerList, PokerGame, Resolve } from "./index.d";
 
 export const createPokerGame = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
+  let outsideResolve: Resolve[] = [];
 
-  let outsideResolve: (val: string) => void = () => {};
-  let outsideReject: (val: string) => void = () => {};
+  const printRoundResult = (): string =>
+    `${Object.entries(currentRound)
+      .map((p) => p.join(": "))
+      .join(", ")}`;
 
   const checkDone = (): void => {
     if (isDrawingComplete()) {
-      outsideResolve(
-        `${Object.entries(currentRound)
-          .map((p) => p.join(": "))
-          .join(", ")}`
-      );
+      outsideResolve.forEach((func) => {
+        func(printRoundResult());
+      });
+      outsideResolve = [];
     }
   };
 
@@ -54,16 +55,11 @@ export const createPokerGame = (): PokerGame => {
 
     const getCards = (): Promise<string> => {
       if (isDrawingComplete()) {
-        return Promise.resolve(
-          `${Object.entries(currentRound)
-            .map((p) => p.join(": "))
-            .join(", ")}`
-        );
+        return Promise.resolve(printRoundResult());
       }
 
-      return new Promise<string>((resolve, reject) => {
-        outsideResolve = resolve;
-        outsideReject = reject;
+      return new Promise<string>((resolve) => {
+        outsideResolve.push(resolve);
       });
     };
 
