@@ -1,15 +1,6 @@
-import {
-  CreatePokerGame,
-  Fib,
-  PlayerList,
-  PokerGame,
-  Resolve,
-  Tshirt,
-} from "./index.d";
+import { PlayerList, PokerGame, Resolve, Decks } from "./index.d";
 
-export const createPokerGame: CreatePokerGame<
-  Tshirt
-> = (): PokerGame<Tshirt> => {
+export const createPokerGame = <T extends Decks>(): PokerGame<T> => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
   let outsideResolve: Resolve[] = [];

@@ -39,7 +39,6 @@ export type Tshirt =
 
 export type Decks = Fib | ModFib | Tshirt;
 export type Resolve = (val: string) => void;
-export type CreatePokerGame<Deck> = () => PokerGame<Deck>;
 export interface PokerGame<Deck> {
   addPlayer: (name: string) => PlayerInstance<Deck>;
   startRound: () => RoomInstance;
