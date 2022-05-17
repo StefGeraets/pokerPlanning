@@ -1,8 +1,8 @@
-import { PlayerList, PokerGame, Resolve, Decks } from "./index.d";
+import { CreatePokerGame, PlayerList, PokerGame, Resolve } from "./index.d";
 
-export const createPokerGame = <T extends Decks>(): PokerGame<T> => {
+export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
   let players: string[] = [];
-  let currentRound: PlayerList = {};
+  let currentRound: PlayerList<T> = {};
   let outsideResolve: Resolve[] = [];
 
   const printRoundResult = (): string =>
@@ -26,7 +26,7 @@ export const createPokerGame = <T extends Decks>(): PokerGame<T> => {
   const addPlayer = (name: string) => {
     players = [...players, name];
 
-    const draw = (card: string) => {
+    const draw = (card: T) => {
       if (Object.keys(currentRound).length === 0) {
         throw new Error("No round started");
       }
