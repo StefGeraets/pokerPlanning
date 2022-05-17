@@ -1,8 +1,27 @@
-import { PlayerList, PokerGame } from "./index.d";
+import { PlayerList, PokerGame, Resolve } from "./index.d";
 
 export const createPokerGame = (): PokerGame => {
   let players: string[] = [];
   let currentRound: PlayerList = {};
+  let outsideResolve: Resolve[] = [];
+
+  const printRoundResult = (): string =>
+    `${Object.entries(currentRound)
+      .map((p) => p.join(": "))
+      .join(", ")}`;
+
+  const checkDone = (): void => {
+    if (isDrawingComplete()) {
+      outsideResolve.forEach((func) => {
+        func(printRoundResult());
+      });
+      outsideResolve = [];
+    }
+  };
+
+  const isDrawingComplete = (): boolean => {
+    return Object.keys(currentRound).every((key) => currentRound[key] !== null);
+  };
 
   const addPlayer = (name: string) => {
     players = [...players, name];
@@ -17,6 +36,7 @@ export const createPokerGame = (): PokerGame => {
       }
 
       currentRound[name] = card;
+      checkDone();
     };
 
     return { draw };
@@ -33,18 +53,14 @@ export const createPokerGame = (): PokerGame => {
       {}
     );
 
-    const getCards = () => {
-      let done: boolean = false;
-
-      done = Object.keys(currentRound).every((key) => currentRound[key] !== null);
-
-      if (done) {
-        return `${Object.entries(currentRound)
-          .map((p) => p.join(": "))
-          .join(", ")}`;
-      } else {
-        return "Drawing cards is not done";
+    const getCards = (): Promise<string> => {
+      if (isDrawingComplete()) {
+        return Promise.resolve(printRoundResult());
       }
+
+      return new Promise<string>((resolve) => {
+        outsideResolve.push(resolve);
+      });
     };
 
     return { getCards };

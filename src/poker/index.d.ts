@@ -1,3 +1,5 @@
+export type Resolve = (val: string) => void;
+
 export interface PokerGame {
   addPlayer: (name: string) => PlayerInstance;
   startRound: () => RoomInstance;
@@ -8,7 +10,7 @@ export interface PlayerInstance {
 }
 
 export interface RoomInstance {
-  getCards: () => string;
+  getCards: () => Promise<string>;
 }
 
 export interface PlayerList {
