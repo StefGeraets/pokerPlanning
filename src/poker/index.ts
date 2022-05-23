@@ -1,9 +1,16 @@
 import { CreatePokerGame, PlayerList, PokerGame, Resolve } from "./index.d";
 
-export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
+export const createPokerGame: CreatePokerGame = <T>(
+  roundLength?: number
+): PokerGame<T> => {
+  const toMinutes: number = 60 * 1000;
+  const waitMinutes: number = roundLength
+    ? roundLength * toMinutes
+    : 10 * toMinutes;
   let players: string[] = [];
   let currentRound: PlayerList<T> = {};
   let outsideResolve: Resolve[] = [];
+  let outsideReject: Resolve;
 
   const printRoundResult = (): string =>
     `${Object.entries(currentRound)
@@ -53,13 +60,21 @@ export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
       {}
     );
 
+    // startTimer(setTime in CreateGame);
+    setTimeout(() => {
+      outsideReject(
+        `Not everyone has drawn a card. Current drawn cards: ${printRoundResult()}`
+      );
+    }, waitMinutes);
+
     const getCards = (): Promise<string> => {
       if (isDrawingComplete()) {
         return Promise.resolve(printRoundResult());
       }
 
-      return new Promise<string>((resolve) => {
+      return new Promise<string>((resolve, reject) => {
         outsideResolve.push(resolve);
+        outsideReject = reject;
       });
     };
 

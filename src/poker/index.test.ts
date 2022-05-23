@@ -1,11 +1,11 @@
-import { PokerGame } from "./index.d";
+import { Fib, PokerGame } from "./index.d";
 import { createPokerGame } from "./index";
 
-let game: PokerGame;
+let game: PokerGame<Fib>;
 
 describe("createPokerGame", () => {
   beforeEach(() => {
-    game = createPokerGame();
+    game = createPokerGame<Fib>();
   });
 
   describe("addPlayer", () => {
@@ -90,8 +90,8 @@ describe("createPokerGame", () => {
 
       henk.draw("3");
 
-      const result1 = round.getCards();
-      const result2 = round.getCards();
+      const result1 = round.getCards(); // Client
+      const result2 = round.getCards(); // Client
 
       piet.draw("5");
 
@@ -99,6 +99,53 @@ describe("createPokerGame", () => {
         "henk: 3, piet: 5",
         "henk: 3, piet: 5",
       ]);
+    });
+
+    it("Should reject after set time has passed when not all cards are drawn", async () => {
+      jest.useFakeTimers(); // override timers
+      const newGame = createPokerGame(60); // Start new game with 60 minute time from starting round
+
+      const henk = newGame.addPlayer("henk");
+      const piet = newGame.addPlayer("piet");
+      const round = newGame.startRound();
+
+      henk.draw("13");
+
+      const result = round.getCards();
+
+      jest.runAllTimers(); // Complete all timeouts
+
+      await expect(result).rejects.toBe(
+        "Not everyone has drawn a card. Current drawn cards: henk: 13, piet: "
+      );
+    });
+
+    it("After 1h test that the promise is still not resolved. Check then pending state", () => {
+      // expect.assertions(1);
+      jest.useFakeTimers();
+      let isPending = true;
+
+      const henk = game.addPlayer("henk");
+      const piet = game.addPlayer("piet");
+      const round = game.startRound();
+
+      henk.draw("13");
+
+      const result = round.getCards();
+
+      jest.advanceTimersByTime(60 * 60 * 1000); // 1 hour
+
+      result.then(() => (isPending = false));
+
+      expect(isPending).toBe(true);
+    });
+
+    it.skip("Give timer to createGame. When round starts, start timer. When timer hits 0 reject promise", async () => {
+      jest.useFakeTimers();
+
+      const newGame = createPokerGame(60);
+      const henk = newGame.addPlayer("henk");
+      const piet = game.addPlayer("piet");
     });
   });
 });
