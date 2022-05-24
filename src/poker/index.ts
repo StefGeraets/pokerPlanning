@@ -9,8 +9,8 @@ export const createPokerGame: CreatePokerGame = <T>(
     : 10 * toMinutes;
   let players: string[] = [];
   let currentRound: PlayerList<T> = {};
-  let outsideResolve: Resolve[] = [];
-  let outsideReject: Resolve;
+  let outsideResolves: Resolve[] = [];
+  let outsideRejects: Resolve[] = [];
 
   const printRoundResult = (): string =>
     `${Object.entries(currentRound)
@@ -19,10 +19,10 @@ export const createPokerGame: CreatePokerGame = <T>(
 
   const checkDone = (): void => {
     if (isDrawingComplete()) {
-      outsideResolve.forEach((func) => {
+      outsideResolves.forEach((func) => {
         func(printRoundResult());
       });
-      outsideResolve = [];
+      outsideResolves = [];
     }
   };
 
@@ -60,11 +60,13 @@ export const createPokerGame: CreatePokerGame = <T>(
       {}
     );
 
-    // startTimer(setTime in CreateGame);
     setTimeout(() => {
-      outsideReject(
-        `Not everyone has drawn a card. Current drawn cards: ${printRoundResult()}`
+      outsideRejects.forEach((func) =>
+        func(
+          `Not everyone has drawn a card. Current drawn cards: ${printRoundResult()}`
+        )
       );
+      outsideRejects = [];
     }, waitMinutes);
 
     const getCards = (): Promise<string> => {
@@ -73,8 +75,8 @@ export const createPokerGame: CreatePokerGame = <T>(
       }
 
       return new Promise<string>((resolve, reject) => {
-        outsideResolve.push(resolve);
-        outsideReject = reject;
+        outsideResolves.push(resolve);
+        outsideRejects.push(reject);
       });
     };
 

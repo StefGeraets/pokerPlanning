@@ -102,8 +102,8 @@ describe("createPokerGame", () => {
     });
 
     it("Should reject after set time has passed when not all cards are drawn", async () => {
-      jest.useFakeTimers(); // override timers
-      const newGame = createPokerGame(60); // Start new game with 60 minute time from starting round
+      jest.useFakeTimers();
+      const newGame = createPokerGame(60);
 
       const henk = newGame.addPlayer("henk");
       const piet = newGame.addPlayer("piet");
@@ -113,7 +113,7 @@ describe("createPokerGame", () => {
 
       const result = round.getCards();
 
-      jest.runAllTimers(); // Complete all timeouts
+      jest.runAllTimers();
 
       await expect(result).rejects.toBe(
         "Not everyone has drawn a card. Current drawn cards: henk: 13, piet: "
@@ -121,7 +121,6 @@ describe("createPokerGame", () => {
     });
 
     it("After 1h test that the promise is still not resolved. Check then pending state", () => {
-      // expect.assertions(1);
       jest.useFakeTimers();
       let isPending = true;
 
@@ -132,20 +131,11 @@ describe("createPokerGame", () => {
       henk.draw("13");
 
       const result = round.getCards();
+      result.then(() => (isPending = false));
 
       jest.advanceTimersByTime(60 * 60 * 1000); // 1 hour
 
-      result.then(() => (isPending = false));
-
       expect(isPending).toBe(true);
-    });
-
-    it.skip("Give timer to createGame. When round starts, start timer. When timer hits 0 reject promise", async () => {
-      jest.useFakeTimers();
-
-      const newGame = createPokerGame(60);
-      const henk = newGame.addPlayer("henk");
-      const piet = game.addPlayer("piet");
     });
   });
 });
