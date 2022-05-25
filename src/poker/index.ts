@@ -1,9 +1,16 @@
 import { CreatePokerGame, PlayerList, PokerGame, Resolve } from "./index.d";
 
-export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
+export const createPokerGame: CreatePokerGame = <T>(
+  roundLength?: number
+): PokerGame<T> => {
+  const toMinutes: number = 60 * 1000;
+  const waitMinutes: number = roundLength
+    ? roundLength * toMinutes
+    : 10 * toMinutes;
   let players: string[] = [];
   let currentRound: PlayerList<T> = {};
-  let outsideResolve: Resolve[] = [];
+  let outsideResolves: Resolve[] = [];
+  let outsideRejects: Resolve[] = [];
 
   const printRoundResult = (): string =>
     `${Object.entries(currentRound)
@@ -12,10 +19,10 @@ export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
 
   const checkDone = (): void => {
     if (isDrawingComplete()) {
-      outsideResolve.forEach((func) => {
+      outsideResolves.forEach((func) => {
         func(printRoundResult());
       });
-      outsideResolve = [];
+      outsideResolves = [];
     }
   };
 
@@ -53,13 +60,23 @@ export const createPokerGame: CreatePokerGame = <T>(): PokerGame<T> => {
       {}
     );
 
+    setTimeout(() => {
+      outsideRejects.forEach((func) =>
+        func(
+          `Not everyone has drawn a card. Current drawn cards: ${printRoundResult()}`
+        )
+      );
+      outsideRejects = [];
+    }, waitMinutes);
+
     const getCards = (): Promise<string> => {
       if (isDrawingComplete()) {
         return Promise.resolve(printRoundResult());
       }
 
-      return new Promise<string>((resolve) => {
-        outsideResolve.push(resolve);
+      return new Promise<string>((resolve, reject) => {
+        outsideResolves.push(resolve);
+        outsideRejects.push(reject);
       });
     };
 

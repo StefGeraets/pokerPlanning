@@ -38,7 +38,7 @@ export type Tshirt =
   | "?";
 
 export type Resolve = (val: string) => void;
-export type CreatePokerGame = <Deck>() => PokerGame<Deck>;
+export type CreatePokerGame = <Deck>(roundTime?: number) => PokerGame<Deck>;
 
 export interface PokerGame<Deck> {
   addPlayer: (name: string) => PlayerInstance<Deck>;

@@ -1,11 +1,11 @@
-import { PokerGame } from "./index.d";
+import { Fib, PokerGame } from "./index.d";
 import { createPokerGame } from "./index";
 
-let game: PokerGame;
+let game: PokerGame<Fib>;
 
 describe("createPokerGame", () => {
   beforeEach(() => {
-    game = createPokerGame();
+    game = createPokerGame<Fib>();
   });
 
   describe("addPlayer", () => {
@@ -90,8 +90,8 @@ describe("createPokerGame", () => {
 
       henk.draw("3");
 
-      const result1 = round.getCards();
-      const result2 = round.getCards();
+      const result1 = round.getCards(); // Client
+      const result2 = round.getCards(); // Client
 
       piet.draw("5");
 
@@ -99,6 +99,43 @@ describe("createPokerGame", () => {
         "henk: 3, piet: 5",
         "henk: 3, piet: 5",
       ]);
+    });
+
+    it("Should reject after set time has passed when not all cards are drawn", async () => {
+      jest.useFakeTimers();
+      const newGame = createPokerGame(60);
+
+      const henk = newGame.addPlayer("henk");
+      const piet = newGame.addPlayer("piet");
+      const round = newGame.startRound();
+
+      henk.draw("13");
+
+      const result = round.getCards();
+
+      jest.runAllTimers();
+
+      await expect(result).rejects.toBe(
+        "Not everyone has drawn a card. Current drawn cards: henk: 13, piet: "
+      );
+    });
+
+    it("After 1h test that the promise is still not resolved. Check then pending state", () => {
+      jest.useFakeTimers();
+      let isPending = true;
+
+      const henk = game.addPlayer("henk");
+      const piet = game.addPlayer("piet");
+      const round = game.startRound();
+
+      henk.draw("13");
+
+      const result = round.getCards();
+      result.then(() => (isPending = false));
+
+      jest.advanceTimersByTime(60 * 60 * 1000); // 1 hour
+
+      expect(isPending).toBe(true);
     });
   });
 });
